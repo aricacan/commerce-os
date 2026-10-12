@@ -1,0 +1,27 @@
+{
+  "id": "/dashboard",
+  "name": "ERP",
+  "short_name": "StoreB",
+  "description": "ERP — sipariş, stok, finans ve lojistik paneli",
+  "lang": "tr",
+  "dir": "ltr",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f4f4f5",
+  "theme_color": "#ef4444",
+  "orientation": "any",
+  "categories": ["business", "productivity"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Siparişler", "short_name": "Siparişler", "url": "/orders" },
+    { "name": "Ürünler", "short_name": "Ürünler", "url": "/products" },
+    { "name": "Depo", "short_name": "Depo", "url": "/warehouse" },
+    { "name": "Finans", "short_name": "Finans", "url": "/finance" }
+  ]
+}

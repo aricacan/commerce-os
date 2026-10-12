@@ -1,0 +1,725 @@
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --font-sans:               var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono:               ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /* ─── Tipografi ölçeği ───────────────────────────────────────────────────────
+   *
+   * Yazı TİPİ zaten tek merkezdeydi (Inter, --font-sans). Dağınık olan BOYUTTU:
+   * arayüzde 26 farklı font boyutu (8px'den 42px'e) ve ~4.000 elle yazılmış
+   * bildirim vardı — `fontSize: 10.5` satır içi, `text-[10.5px]` arbitrary sınıf.
+   * Aynı işi yapan iki etiket üç farklı boyutta çıkabiliyordu.
+   *
+   * Bu ölçek o 26 değeri 7'ye indirir. Adlar bilerek `ui-` önekli: Tailwind'in
+   * kendi `text-xs`/`text-sm` ölçeğini EZMİYORUZ — ezseydik mevcut binlerce
+   * kullanım tek seferde kayardı ve hiçbiri gözden geçirilmemiş olurdu. Geçiş
+   * modül modül yapılır, ilerleme `npm run typography` ile ölçülür.
+   *
+   * Kullanım: text-ui-xs, text-ui-md … (arbitrary `text-[Npx]` yazmayın).
+   * Ağırlık için yalnızca üç basamak: font-normal (400), font-semibold (600),
+   * font-bold (700). Arayüzde 5+ farklı ağırlık vardı, ayırt edilebilir değildi.
+   *
+   * Ölçünün HAM değerleri :root'ta (--ui-2xs …) durur, buradakiler yalnızca
+   * Tailwind takma adıdır — renklerdeki --bg / --color-bg deseniyle aynı. Böylece
+   * globals.css'teki düz CSS kuralları da (bkz. .dropdown-option) aynı tek kaynağı
+   * var(--ui-*) ile okuyabilir; değer hiçbir yerde ikinci kez yazılmaz.
+   */
+  --text-ui-2xs:  var(--ui-2xs);
+  --text-ui-xs:   var(--ui-xs);
+  --text-ui-sm:   var(--ui-sm);
+  --text-ui-md:   var(--ui-md);
+  --text-ui-lg:   var(--ui-lg);
+  --text-ui-xl:   var(--ui-xl);
+  --text-ui-2xl:  var(--ui-2xl);
+  --color-bg:                var(--bg);
+  --color-bg-subtle:         var(--bg-subtle);
+  --color-card:              var(--card);
+  --color-card-hover:        var(--card-hover);
+  --color-border:            var(--border);
+  --color-border-soft:       var(--border-soft);
+  --color-border-strong:     var(--border-strong);
+  --color-sidebar:           var(--sidebar);
+  --color-topbar:            var(--topbar);
+  --color-sidebar-fg:        var(--sidebar-fg);
+  --color-sidebar-fg-muted:  var(--sidebar-fg-muted);
+  --color-sidebar-active-bg: var(--sidebar-active-bg);
+  --color-sidebar-active-fg: var(--sidebar-active-fg);
+  --color-sidebar-hover-bg:  var(--sidebar-hover-bg);
+  --color-fg:                var(--fg);
+  --color-fg-muted:          var(--fg-muted);
+  --color-fg-subtle:         var(--fg-subtle);
+  --color-accent:            var(--accent);
+  --color-accent-h:          var(--accent-h);
+  --color-accent-soft:       var(--accent-soft);
+  --color-accent-dim:        var(--accent-dim);
+  --color-success:           var(--success);
+  --color-success-soft:      var(--success-soft);
+  --color-warning:           var(--warning);
+  --color-warning-soft:      var(--warning-soft);
+  --color-danger:            var(--danger);
+  --color-danger-soft:       var(--danger-soft);
+  --color-info:              var(--info);
+  --color-info-soft:         var(--info-soft);
+}
+
+/* ─── Design Tokens ─────────────────────────────────────────────────────────── */
+:root {
+  /* Tipografi ölçeği — TEK KAYNAK.
+     Aynı yedi basamak üç yerden okunur ve hiçbirinde değer tekrar yazılmaz:
+       • Tailwind sınıfı   → text-ui-xs …      (@theme inline takma adları, yukarıda)
+       • Düz CSS kuralı    → var(--ui-xs) …    (bu dosyanın alt kısmı)
+       • Satır içi stil    → text.xs …         (features/shared/design.ts)
+     design.ts'teki sayılar bunlarla BİREBİR aynı olmalı; birini değiştiren ötekini de
+     değiştirir. */
+  --ui-2xs: 10px;    /* rozet, tablo alt bilgisi — eski 8/9/9.5/10 */
+  --ui-xs:  11px;    /* ikincil metin, etiket — eski 10.5/11/11.5 */
+  --ui-sm:  12px;    /* tablo hücresi, düğme — eski 12/12.5 */
+  --ui-md:  13.5px;  /* gövde (body ile aynı) — eski 13/13.5/14 */
+  --ui-lg:  16px;    /* kart başlığı — eski 15/16/17 */
+  --ui-xl:  20px;    /* sayfa başlığı — eski 18/19/20/22 */
+  --ui-2xl: 28px;    /* KPI sayısı — eski 24/26/28/32/42 */
+
+  /* Surfaces */
+  --bg:           #f4f4f5;
+  --bg-subtle:    #e4e4e7;
+  --card:         #FAFAF8;
+  --card-hover:   #F1F0EC;
+  --border:       #e4e4e7;
+  --border-soft:  #f0f0f0;
+  --border-strong: #64748b;
+
+  /* Sidebar / Topbar */
+  --sidebar:      #FAFAF8;
+  --topbar:       #FAFAF8;
+
+  /* Sidebar tokens */
+  --sidebar-fg:         #0f172a;
+  --sidebar-fg-muted:   #64748b;
+  --sidebar-active-bg:  rgba(229,37,33,0.06);
+  --sidebar-active-fg:  #dc2626;
+  --sidebar-hover-bg:   rgba(15, 23, 42, 0.03);
+
+  /* Typography */
+  --fg:           #09090b;
+  --fg-muted:     #71717a;
+  --fg-subtle:    #a1a1aa;
+  --fg-muted-rgb: 113,113,122;
+
+  /* Accent — Terracotta (soft, danger'dan görsel olarak ayrışık) */
+  --accent:       #BF4A42;
+  --accent-h:     #A23B34;
+  --accent-soft:  #FBEAE8;
+  --accent-dim:   #DDA39D;
+  /* rgba(var(--accent-rgb), alpha) ile opaklık kademeleri için — heatmap gibi yerlerde
+     var(--accent) her zaman tam opak, ara tonlar için ham bileşenler gerekiyor. */
+  --accent-rgb:   191,74,66;
+
+  /* Status */
+  --success:      #16a34a;
+  --success-soft: #dcfce7;
+  --success-rgb:  22,163,74;
+  --warning:      #d97706;
+  --warning-soft: #fef3c7;
+  --warning-rgb:  217,119,6;
+  --info:         #2563eb;
+  --info-soft:    #dbeafe;
+  --info-rgb:     37,99,235;
+  /* Zarar/hata/olumsuz değer. Marka rengiyle aynı kırmızı ama AYRI token:
+     ikisi farklı şeyler anlatıyor, marka değişirse zarar rengi değişmemeli. */
+  --danger:       #dc2626;
+  --danger-soft:  #fee2e2;
+  --danger-rgb:   220,38,38;
+  /* Monitoring modul aksani. Topbar Uygulamalar kartiyla AYNI indigo — modulun
+     kendi kimligi. Tek yerde tanimli: eskiden 12 ayri dosyada ham #6366f1 ve
+     rgba(99,102,241,...) olarak tekrarlaniyordu ve biri degistiginde otekiler
+     sessizce ayrisiyordu. */
+  --monitoring-accent:     #6366f1;
+  --monitoring-accent-rgb: 99,102,241;
+  /* Omnichannel "Bot" aktörü: sohbet balonunda bot cevabı temsilciden (koyu dolgu) ve
+     müşteriden (nötr kart) tek bakışta ayrışsın diye kendi yumuşak indigo tonu. */
+  --bot-accent:        #4f46e5;
+  --bot-accent-soft:   #eef2ff;
+  --bot-accent-border: #c7d2fe;
+  /* Kod/konsol yuzeyi — stack trace ve test ciktisi gibi tek-aralikli bloklar.
+     Acik temada da KOYU kalir (kod bloklari icin bilincli); jeton olmasinin
+     sebebi merkezilik: monitoring sekmelerinde 4 ayri koyu hex tekrarlaniyordu. */
+  --code-bg:      #0b0f19;
+  --code-bg-deep: #040711;
+  --code-border:  #1e293b;
+
+  /* Platform Colors */
+  --platform-trendyol:      #f97316;
+  --platform-hepsiburada:   #3b82f6;
+  --platform-amazon:        #eab308;
+  --platform-sentos:        #10b981;
+  --platform-n11:           #8b5cf6;
+  --platform-gittigidiyor:  #ec4899;
+  --platform-pazarama:      #14b8a6;
+  --platform-ciceksepeti:   #f43f5e;
+
+  /* Shadows */
+  --shadow-xs:  0 1px 2px rgba(0,0,0,.05);
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:  0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg:  0 10px 15px rgba(0,0,0,.07), 0 4px 6px rgba(0,0,0,.04);
+  --shadow-xl:  0 20px 25px rgba(0,0,0,.10), 0 8px 10px rgba(0,0,0,.04);
+
+  /* Geometry */
+  --radius-sm:  8px;
+  --radius:     12px;
+  --radius-lg:  16px;
+  --radius-xl:  22px;
+
+  /* Sidebar widths */
+  --sidebar-w:      240px;
+  --sidebar-w-mini: 64px;
+
+  /* Topbar height */
+  --topbar-h: 56px;
+}
+
+.dark {
+  --bg:           #121316;
+  --bg-subtle:    #18191e;
+  --card:         #1d1e24;
+  --card-hover:   #24262e;
+  --border:       #2e313b;
+  --border-soft:  #252731;
+  --border-strong: #475569;
+
+  --sidebar:      #15161b;
+  --topbar:       #15161b;
+
+  --sidebar-fg:         #f8fafc;
+  --sidebar-fg-muted:   #9ca3af;
+  --sidebar-active-bg:  rgba(239, 68, 68, 0.12);
+  --sidebar-active-fg:  #f87171;
+  --sidebar-hover-bg:   rgba(255, 255, 255, 0.04);
+
+  --fg:           #f4f4f7;
+  --fg-muted:     #9496a1;
+  --fg-subtle:    #6b6d7a;
+  --fg-muted-rgb: 148,150,161;
+
+  --accent:       #E08E85;
+  --accent-h:     #EBA9A1;
+  --accent-soft:  #3B221F;
+  --accent-dim:   #B87A72;
+  --accent-rgb:   224,142,133;
+
+  --success:      #22c55e;
+  --success-soft: #052e16;
+  --success-rgb:  34,197,94;
+  --warning:      #f59e0b;
+  --warning-soft: #1c1400;
+  --warning-rgb:  245,158,11;
+  --info:         #3b82f6;
+  --info-soft:    #0f172a;
+  --info-rgb:     59,130,246;
+  --danger:       #ef4444;
+  --danger-soft:  #3f0a0a;
+  --danger-rgb:   239,68,68;
+  /* Monitoring modul aksani. Topbar Uygulamalar kartiyla AYNI indigo — modulun
+     kendi kimligi. Tek yerde tanimli: eskiden 12 ayri dosyada ham #6366f1 ve
+     rgba(99,102,241,...) olarak tekrarlaniyordu ve biri degistiginde otekiler
+     sessizce ayrisiyordu. */
+  --monitoring-accent:     #6366f1;
+  --monitoring-accent-rgb: 99,102,241;
+  --bot-accent:        #a5b4fc;
+  --bot-accent-soft:   #1e1b4b;
+  --bot-accent-border: #3730a3;
+  /* Kod/konsol yuzeyi — stack trace ve test ciktisi gibi tek-aralikli bloklar.
+     Acik temada da KOYU kalir (kod bloklari icin bilincli); jeton olmasinin
+     sebebi merkezilik: monitoring sekmelerinde 4 ayri koyu hex tekrarlaniyordu. */
+  --code-bg:      #0b0f19;
+  --code-bg-deep: #040711;
+  --code-border:  #1e293b;
+
+  /* Platform Colors */
+  --platform-trendyol:      #ea580c;
+  --platform-hepsiburada:   #2563eb;
+  --platform-amazon:        #ca8a04;
+  --platform-sentos:        #059669;
+  --platform-n11:           #7c3aed;
+  --platform-gittigidiyor:  #db2777;
+  --platform-pazarama:      #0d9488;
+  --platform-ciceksepeti:   #e11d48;
+
+  --shadow-xs:  0 1px 2px rgba(0,0,0,.25);
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.35), 0 1px 2px rgba(0,0,0,.25);
+  --shadow-md:  0 4px 6px rgba(0,0,0,.4), 0 2px 4px rgba(0,0,0,.3);
+  --shadow-lg:  0 10px 15px rgba(0,0,0,.5), 0 4px 6px rgba(0,0,0,.4);
+  --shadow-xl:  0 20px 25px rgba(0,0,0,.6), 0 8px 10px rgba(0,0,0,.4);
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────────── */
+/* @layer base ŞART: katmansız yazılırsa bu kural, Tailwind'in @layer utilities
+   içindeki padding ve margin yardımcılarını ÖZGÜLLÜKTEN BAĞIMSIZ olarak ezer
+   (CSS'te katmansız stiller her zaman katmanlı stilleri yener) — yani "p-4"
+   sessizce hiçbir şey yapmaz. base katmanı utilities'ten önce geldiği için
+   burada sıfırlama görevini yapar ama yardımcı sınıflara yol verir. */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--ui-md);
+  line-height: 1.45;
+  letter-spacing: -0.011em;
+  font-feature-settings: 'cv02' 1, 'cv03' 1, 'cv04' 1, 'cv11' 1, 'tnum' 1;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Control Panel Typography (Tabular Numerals, Precision Inputs & Tables) ─── */
+table,
+.tabular-nums,
+[data-tabular="true"] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1, 'cv02' 1, 'cv03' 1, 'cv04' 1, 'cv11' 1;
+}
+
+input,
+button,
+select,
+textarea {
+  font-feature-settings: 'cv02' 1, 'cv03' 1, 'cv04' 1, 'cv11' 1, 'tnum' 1;
+  letter-spacing: -0.01em;
+}
+
+th {
+  letter-spacing: 0.04em;
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--fg-subtle); }
+
+/* İlk :focus-visible tanımı 383. satırda kapsamlı haliyle yeniden tanımlandı,
+   bu kopya kaldırıldı. */
+
+/* ─── React Grid Layout ─────────────────────────────────────────────────────── */
+.react-grid-layout { position: relative; }
+
+.react-grid-item {
+  transition: box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.react-grid-item.react-draggable-dragging {
+  z-index: 100;
+  box-shadow: var(--shadow-lg);
+  opacity: 0.92;
+  cursor: grabbing !important;
+  transition: none;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: var(--accent);
+  opacity: 0.08;
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--accent);
+  transition: none;
+}
+
+.react-resizable-handle {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  bottom: 6px;
+  right: 6px;
+  cursor: se-resize;
+  opacity: 0;
+  transition: opacity 0.15s;
+  background: none;
+  /* custom resize indicator */
+  background-image: none;
+}
+
+.react-resizable-handle::after {
+  content: '';
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--fg-subtle);
+  border-bottom: 2px solid var(--fg-subtle);
+  border-radius: 1px;
+}
+
+.react-grid-item:hover .react-resizable-handle { opacity: 1; }
+
+/* ─── Recharts ─────────────────────────────────────────────────────────────── */
+.recharts-tooltip-wrapper { outline: none !important; }
+.recharts-surface { overflow: visible; }
+
+/* ─── Animations ────────────────────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes modalSlideUp {
+  from { transform: translateY(24px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.animate-fade-in { animation: fadeIn 0.2s ease forwards; }
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-subtle) 25%,
+    var(--border) 50%,
+    var(--bg-subtle) 75%
+  );
+  background-size: 400px 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* Sürekli yanıp sönen parıltı, hareket duyarlılığı olan kullanıcılarda baş dönmesi
+   yapabiliyor. Animasyonu kes ama iskeleti görünür bırak. */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}
+
+/* ─── Native date/time inputs ──────────────────────────────────────────────────
+   Tarayıcı, takvim ikonunu ve açılır takvim panelini `color-scheme`'e göre çizer.
+   Bu olmadan dark modda ikon/panel hep light temada kalıp göz batıyordu. */
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"] {
+  color-scheme: light;
+}
+
+.dark input[type="date"],
+.dark input[type="time"],
+.dark input[type="datetime-local"] {
+  color-scheme: dark;
+}
+
+/* ─── Native <select> ──────────────────────────────────────────────────────────
+   Açılır listeyi İŞLETİM SİSTEMİ çizer; arka planını CSS ile boyayamayız ama
+   `color-scheme` ile hangi temada çizeceğini SÖYLEYEBİLİRİZ. Bu satır olmadan
+   dark modda liste beyaz bir kutu olarak açılıyor ve seçili satır parlak mavi
+   sistem vurgusuyla geliyordu (bkz. Slack ayarları ekran görüntüsü).
+
+   Tam kontrol gereken yerlerde (etiket + ipucu, tik işareti, arama) hâlâ
+   components/ui/FormSelect kullanılmalı — bu kural yalnızca geri kalan ~50
+   ham <select>'i göze batmaz hâle getirir. */
+select {
+  color-scheme: light;
+}
+
+.dark select {
+  color-scheme: dark;
+}
+
+/* Seçenek satırları: bazı tarayıcılar (Firefox, Chromium/Linux) option'ı ayrıca
+   boyamaya izin verir; verdiği yerde tema renklerini kullansın. */
+.dark select option {
+  background-color: var(--card);
+  color: var(--fg);
+}
+
+/* ─── Custom Dropdown (bkz. components/ui/Select.tsx) ──────────────────────────
+   Native <select>'in açılır listesi tarayıcı tarafından çizilir ve CSS ile
+   tutarlı biçimde temalandırılamaz (özellikle dark modda beyaz kutu olarak
+   kalır). Bu yüzden dropdown içeriğini kendimiz render ediyoruz. */
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: var(--shadow-xs);
+  color: var(--fg);
+  font-size: var(--ui-sm);
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.dark .dropdown-trigger {
+  background: var(--card);
+  border-color: var(--border);
+}
+
+.dropdown-trigger:hover {
+  background: var(--card-hover);
+  color: var(--fg);
+  border-color: var(--border-strong);
+}
+
+.dropdown-trigger[data-open="true"] {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-xs);
+}
+
+.dropdown-trigger-value {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-trigger-chevron {
+  flex-shrink: 0;
+  color: var(--fg-muted);
+  opacity: 0.7;
+  transition: transform 0.15s ease;
+}
+
+.dropdown-popup {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  min-width: 100%;
+  max-height: 280px;
+  overflow-y: auto;
+  z-index: 60;
+  background: var(--card);
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  box-shadow: var(--shadow-lg);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dropdown-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--fg);
+  font-size: var(--ui-sm);
+  font-weight: 500;
+  font-family: inherit;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.dropdown-option:hover,
+.dropdown-option:focus-visible {
+  background: var(--card-hover);
+  color: var(--fg);
+}
+
+.dropdown-option[data-active="true"] {
+  background: var(--bg-subtle);
+  color: var(--fg);
+  font-weight: 700;
+}
+
+.dropdown-mobile-backdrop,
+.filter-select-mobile-backdrop {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .dropdown-mobile-backdrop,
+  .filter-select-mobile-backdrop {
+    display: block !important;
+    position: fixed;
+    inset: 0;
+    z-index: 99998;
+    border: none;
+    background: rgba(15, 23, 42, 0.52);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .dropdown-popup,
+  .filter-select-popup {
+    position: fixed !important;
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-height: calc(80dvh - 12px) !important;
+    border-radius: 16px 16px 0 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    border-top: 1px solid var(--border) !important;
+    padding: 8px 14px !important;
+    padding-bottom: max(18px, env(safe-area-inset-bottom)) !important;
+    box-shadow: 0 -18px 50px rgba(15, 23, 42, 0.32) !important;
+    z-index: 99999 !important;
+    overscroll-behavior: contain;
+    animation: dropdownSheetSlideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .dropdown-mobile-handle {
+    display: block;
+    width: 38px;
+    height: 4px;
+    margin: 4px auto 10px;
+    flex-shrink: 0;
+    border-radius: 999px;
+    background: var(--border-strong);
+  }
+
+  .dropdown-mobile-title {
+    display: block;
+    font-size: var(--ui-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--fg-muted);
+    padding: 0 4px 8px;
+    border-bottom: 1px solid var(--border-soft);
+    margin-bottom: 6px;
+  }
+
+  .dropdown-option {
+    min-height: 44px !important;
+    padding: 10px 12px !important;
+    font-size: var(--ui-md) !important;
+    border-radius: 8px !important;
+  }
+}
+
+@keyframes dropdownSheetSlideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Özelleştirme sayfaları (Widget/Excel) genelinde ortak, kompakt dropdown görünümü —
+   native <select> VE MultiSelect'in "compact" varyantı bu tek class'ı paylaşır ki
+   ikisi de aynı ayarlar panelinde birbirinden farklı görünmesin. */
+.customize-select-element {
+  width: 100%;
+  padding: 6px 28px 6px 10px;
+  border-radius: 8px;
+  font-size: var(--ui-xs);
+  font-weight: 700;
+  color: var(--fg);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 10.5px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.dark .customize-select-element {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+}
+
+.customize-select-element:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 0 0 2px var(--bg-subtle);
+}
+
+.customize-select-element:focus {
+  border-color: var(--fg);
+  box-shadow: 0 0 0 2px var(--bg-subtle);
+}
+
+/* ── Focus rings (Accessibility / Keyboard Navigation) ── */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+/* ── prefers-reduced-motion — tüm animasyonları/geçişleri kapat ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Terminal Custom Scrollbar ── */
+.terminal-scroll::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.terminal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.terminal-scroll::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+.terminal-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--fg-subtle);
+}
+.terminal-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+

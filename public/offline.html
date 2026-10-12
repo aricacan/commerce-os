@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Çevrimdışı — ERP</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+    background: #121316;
+    color: #f4f4f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .card {
+    background: #1d1e24;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 32px 28px;
+    max-width: 380px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+  .icon-wrapper {
+    width: 44px;
+    height: 44px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a1a1aa;
+  }
+  .text-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  h1 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+  }
+  p {
+    font-size: 12px;
+    color: #71717a;
+    line-height: 1.5;
+  }
+  .btn {
+    height: 32px;
+    padding: 0 16px;
+    background: #ffffff;
+    color: #09090b;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .btn:hover {
+    opacity: 0.9;
+  }
+  .btn:active {
+    opacity: 0.8;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon-wrapper">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0 1 19 12.55M5 12.55a10.94 10.94 0 0 1 5.17-2.39M10.71 5.05A16 16 0 0 1 22.58 9M1.42 9a15.91 15.91 0 0 1 4.7-2.88M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01" />
+      </svg>
+    </div>
+    <div class="text-content">
+      <h1>İnternet bağlantısı yok</h1>
+      <p>Bağlantı sağlandığında ekran otomatik yenilenecektir.</p>
+    </div>
+    <button class="btn" onclick="location.reload()">
+      Tekrar Dene
+    </button>
+  </div>
+
+  <script>
+    window.addEventListener('online', function() {
+      location.reload();
+    });
+  </script>
+</body>
+</html>
