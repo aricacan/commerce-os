@@ -1,11 +1,20 @@
 # ERP Demo
 
-Backend'siz, sahte verilerle çalışan salt-görüntü demo. Tüm veri kurgusaldır; kaydetme/silme gibi işlemler devre dışıdır.
+Backend'siz, sahte verilerle çalışan ERP yönetim paneli demosu (Next.js 16, React 19, TypeScript, Tailwind CSS).
+
+## Çalıştırma
+
+Node.js 20 veya üstü gerekir.
 
 ```bash
 npm install
-npm run dev     # http://localhost:3000 — girişte "Demo versiyondur, devam et"
-npm run build && npm start
+npm run dev
 ```
 
-Tüm istekler tarayıcıda cevaplanır (`src/lib/demo`); gerçek bir sunucuya bağlanılmaz.
+Tarayıcıda `http://localhost:3000` adresini açıp "Demo hesabıyla giriş yap" butonuna basın.
+
+## Notlar
+
+- Tüm veri kurgusaldır ve tarayıcıda üretilir (`src/lib/demo`); gerçek bir sunucuya bağlanılmaz.
+- Kaydetme, silme ve oluşturma gibi işlemler devre dışıdır.
+- `.env` dosyası gerekmez.
